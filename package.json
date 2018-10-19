@@ -9,15 +9,21 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "child_process": "^1.0.2",
+    "fs": "0.0.1-security",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-concat": "^2.6.1",
+    "gulp-nodemon": "^2.2.1",
     "gulp-rename": "^1.4.0",
+    "gulp-run": "^1.7.1",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglify": "^3.0.1"
   },
   "dependencies": {
     "connect": "^3.6.6",
+    "express": "^4.16.4",
     "gentelella": "^1.4.0",
-    "gulp": "^3.9.1",
+    "gulp-cli": "^2.0.1",
     "serve-static": "^1.13.2"
   }
 }

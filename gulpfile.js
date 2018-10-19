@@ -3,33 +3,39 @@ var concat = require("gulp-concat");
 var rename = require("gulp-rename");
 var uglify = require("gulp-uglify");
 var sourcemaps = require("gulp-sourcemaps");
+var run = require("gulp-run");
+var child = require("child_process");
+var fs = require("fs");
+var nodemon = require("gulp-nodemon")
 
 var jsFiles = "assets/scripts/**/*.js",
   jsDest = "dist/scripts";
 
-gulp.task("concat-app-scripts", function() {
-  return gulp
-    .src(jsFiles)
-    .pipe(concat("scripts.js"))
-    .pipe(gulp.dest(jsDest));
-});
+// <<< test
+// gulp.task('concat-app-scripts', function() {
+//   return gulp
+//     .src(jsFiles)
+//     .pipe(concat('scripts.js'))
+//     .pipe(gulp.dest(jsDest));
+// });
 
-gulp.task("concat-libs-scripts", function() {
-  return gulp
-    .src(jsFiles)
-    .pipe(concat("scripts.js"))
-    .pipe(gulp.dest(jsDest));
-});
+// gulp.task('concat-libs-scripts', function() {
+//   return gulp
+//     .src(jsFiles)
+//     .pipe(concat('scripts.js'))
+//     .pipe(gulp.dest(jsDest));
+// });
 
-gulp.task("uglify-scripts", function() {
-  return gulp
-    .src(jsFiles)
-    .pipe(concat("scripts.js"))
-    .pipe(gulp.dest(jsDest))
-    .pipe(rename("scripts.min.js"))
-    .pipe(uglify())
-    .pipe(gulp.dest(jsDest));
-});
+// gulp.task('uglify-scripts', function() {
+//   return gulp
+//     .src(jsFiles)
+//     .pipe(concat('scripts.js'))
+//     .pipe(gulp.dest(jsDest))
+//     .pipe(rename('scripts.min.js'))
+//     .pipe(uglify())
+//     .pipe(gulp.dest(jsDest));
+// });
+//test >>>
 
 gulp.task("javascript:libs", function() {
   return (
@@ -60,6 +66,7 @@ gulp.task("javascript:libs", function() {
         "./node_modules/gentelella/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js",
         "./node_modules/gentelella/vendors/moment/min/moment.min.js",
         "./node_modules/gentelella/vendors/bootstrap-daterangepicker/daterangepicker.js",
+
         //tables
         "./node_modules/gentelella/vendors/datatables.net/js/jquery.dataTables.min.js",
         "./node_modules/gentelella/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js",
@@ -78,7 +85,7 @@ gulp.task("javascript:libs", function() {
         "./node_modules/gentelella/vendors/pdfmake/build/vfs_fonts.js",
 
         //custom for library
-        "./node_modules/gentelella/build/js/custom.min.js",
+        "./node_modules/gentelella/build/js/custom.min.js"
       ])
       .pipe(sourcemaps.init())
       // getBundleName creates a cache busting name
@@ -100,6 +107,7 @@ gulp.task("css:libs", function() {
         "./node_modules/gentelella/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css",
         "./node_modules/gentelella/vendors/jqvmap/dist/jqvmap.min.css",
         "./node_modules/gentelella/vendors/bootstrap-daterangepicker/daterangepicker.css",
+
         //tables
         "./node_modules/gentelella/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css",
         "./node_modules/gentelella/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css",
@@ -108,7 +116,7 @@ gulp.task("css:libs", function() {
         "./node_modules/gentelella/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css",
 
         //custom for library
-        "./node_modules/gentelella/build/css/custom.min.css",
+        "./node_modules/gentelella/build/css/custom.min.css"
       ])
       .pipe(sourcemaps.init())
       // getBundleName creates a cache busting name
@@ -119,6 +127,46 @@ gulp.task("css:libs", function() {
   );
 });
 
+gulp.task("build:libs", gulp.parallel("javascript:libs", "css:libs"));
+
+// gulp.task('run:server', function(){
+//     return gulp
+//             .pipe(run('node server.js'))
+
+// });
+
+gulp.task("watch:server", function() {
+  gulp.watch("./server.js", gulp.series("default"));
+});
+
+gulp.task("server", function() {
+    
+  var server = child.spawn("node", ["server.js"]);
+  var log = fs.createWriteStream("server.log", { flags: "a" });
+  server.stdout.pipe(log);
+  server.stderr.pipe(log);
+});
+
+gulp.task('server', function() {
+    // configure nodemon
+    nodemon({
+        // the script to run the app
+        script: 'server.js',
+        // this listens to changes in any of these files/routes and restarts the application
+        watch: ["server.js",],
+        ext: 'js'
+        // Below i'm using es6 arrow functions but you can remove the arrow and have it a normal .on('restart', function() { // then place your stuff in here }
+    }).on('restart', () => {
+    gulp.src('./server.js')
+      // I've added notify, which displays a message on restart. Was more for me to test so you can remove this
+    //   .pipe(console.log('Running the start tasks and stuff'));
+  });
+});
+
+gulp.task(
+  "default",
+  gulp.series("build:libs",gulp.parallel("server"))
+);
 function handleErrors(error) {
   console.log(error);
 }
