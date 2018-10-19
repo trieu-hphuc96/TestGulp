@@ -1,0 +1,23 @@
+{
+  "name": "testgulp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.1"
+  },
+  "dependencies": {
+    "connect": "^3.6.6",
+    "gentelella": "^1.4.0",
+    "gulp": "^3.9.1",
+    "serve-static": "^1.13.2"
+  }
+}
